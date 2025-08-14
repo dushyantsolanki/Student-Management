@@ -12,7 +12,7 @@ const markSchema = new mongoose.Schema(
       ref: "Subject",
     },
 
-    mark: { type: Number, require: true },
+    mark: { type: Number, require: true, trim: true },
   },
   { timestamps: true }
 );

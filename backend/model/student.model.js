@@ -2,10 +2,10 @@ import mongoose from "mongoose";
 
 const studentSchema = new mongoose.Schema(
   {
-    firstName: { type: String, require: true },
-    lastName: { type: String, require: true },
-    class: { type: String, require: true },
-    rollNo: { type: Number, require: true },
+    firstName: { type: String, required: true, trim: true, lowercase: true },
+    lastName: { type: String, required: true, trim: true, lowercase: true },
+    class: { type: String, required: true, trim: true, lowercase: true },
+    rollNo: { type: Number, require: true, trim: true },
     status: {
       type: String,
       enum: ["pending", "done"],
