@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { Student } from "../model/index.js";
+import Student from "../model/student.model.js";
 
 const studentSchema = z.object({
   firstName: z.string().min(1, "First name is required"),
