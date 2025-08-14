@@ -25,9 +25,7 @@ const Subject = () => {
       resetForm();
       onClose();
     } catch (error) {
-      toast.error(
-        error.response?.data?.error?.message || "Failed to add subject"
-      );
+      toast.error(error.response?.data?.message || "Failed to add subject");
     } finally {
       setLoading(false);
     }
@@ -50,9 +48,7 @@ const Subject = () => {
         }, {}) || {}
       );
     } catch (error) {
-      toast.error(
-        error.response?.data?.error?.message || "Failed to fetch subjects"
-      );
+      toast.error(error.response?.data?.message || "Failed to fetch subjects");
     } finally {
       setIsFetching(false);
     }

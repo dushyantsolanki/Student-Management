@@ -31,9 +31,7 @@ const Student = () => {
       resetForm();
       onClose();
     } catch (error) {
-      toast.error(
-        error.response?.data?.error?.message || "Failed to create student"
-      );
+      toast.error(rror.response?.data?.message || "Failed to create student");
     } finally {
       setLoading(false);
     }
@@ -47,9 +45,7 @@ const Student = () => {
       );
       setStudents(response.data.data);
     } catch (error) {
-      toast.error(
-        error.response?.data?.error?.message || "Failed to fetch students"
-      );
+      toast.error(error.response?.data?.message || "Failed to fetch students");
     } finally {
       setIsFetching(false);
     }

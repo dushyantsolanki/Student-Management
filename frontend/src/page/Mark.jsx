@@ -29,7 +29,7 @@ const Mark = () => {
       resetForm();
       onClose();
     } catch (error) {
-      toast.error(error.response?.data?.error?.message || "Failed to add mark");
+      toast.error(error.response?.data?.message || "Failed to add mark");
     } finally {
       setLoading(false);
     }
@@ -43,9 +43,7 @@ const Mark = () => {
       );
       setStudents(response.data?.data || []);
     } catch (error) {
-      toast.error(
-        error.response?.data?.error?.message || "Failed to fetch students"
-      );
+      toast.error(error.response?.data?.message || "Failed to fetch students");
     }
   };
 
@@ -56,9 +54,7 @@ const Mark = () => {
       );
       setSubjects(response.data?.data || []);
     } catch (error) {
-      toast.error(
-        error.response?.data?.error?.message || "Failed to fetch subjects"
-      );
+      toast.error(error.response?.data?.message || "Failed to fetch subjects");
     }
   };
 
@@ -69,9 +65,7 @@ const Mark = () => {
       );
       setMarks(response.data?.data || []);
     } catch (error) {
-      toast.error(
-        error.response?.data?.error?.message || "Failed to fetch marks"
-      );
+      toast.error(error.response?.data?.message || "Failed to fetch marks");
     }
   };
 
