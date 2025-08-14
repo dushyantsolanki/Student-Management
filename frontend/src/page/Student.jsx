@@ -3,12 +3,14 @@ import Table from "../component/Table";
 import StudentFormModal from "../component/form/StudentFormModel";
 import { toast } from "react-toastify";
 import axios from "axios";
+import { Loader } from "../component/Loader";
 
 const Student = () => {
   const colsHeader = ["firstName", "lastName", "class", "rollNo", "status"];
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [isFetching, setIsFetching] = useState(false);
   const [students, setStudents] = useState([]);
   const [page, setPage] = useState(1);
   const [perPage, setPerPage] = useState(10);
@@ -38,6 +40,7 @@ const Student = () => {
   };
 
   const getAllStudents = async () => {
+    setIsFetching(true);
     try {
       const response = await axios.get(
         `${import.meta.env.VITE_API_URL}/api/v1/student`
@@ -47,6 +50,8 @@ const Student = () => {
       toast.error(
         error.response?.data?.error?.message || "Failed to fetch students"
       );
+    } finally {
+      setIsFetching(false);
     }
   };
 
@@ -63,14 +68,20 @@ const Student = () => {
         + New Student
       </button>
 
-      <Table
-        colsHeader={colsHeader}
-        data={students}
-        currentPage={page}
-        onPageChange={setPage}
-        itemsPerPage={perPage}
-        onItemsPerPageChange={setPerPage}
-      />
+      <div className="mt-4">
+        {isFetching ? (
+          <Loader />
+        ) : (
+          <Table
+            colsHeader={colsHeader}
+            data={students}
+            currentPage={page}
+            onPageChange={setPage}
+            itemsPerPage={perPage}
+            onItemsPerPageChange={setPerPage}
+          />
+        )}
+      </div>
 
       <StudentFormModal
         isOpen={isModalOpen}

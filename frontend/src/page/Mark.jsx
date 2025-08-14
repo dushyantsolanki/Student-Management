@@ -3,6 +3,7 @@ import MarkFormModel from "../component/form/MarkFormModel";
 import Table from "../component/Table";
 import { toast } from "react-toastify";
 import axios from "axios";
+import { Loader } from "../component/Loader";
 
 const Mark = () => {
   const [students, setStudents] = useState([]);
@@ -10,6 +11,7 @@ const Mark = () => {
   const [marks, setMarks] = useState([]);
   const [isMarkModalOpen, setIsMarkModalOpen] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [isFetching, setIsFetching] = useState(false);
 
   const handleAddMark = async (markData, resetForm, onClose) => {
     setLoading(true);
@@ -74,9 +76,22 @@ const Mark = () => {
   };
 
   useEffect(() => {
-    getAllMarks();
-    getAllStudents({ status: "pending" });
-    getAllSubjects();
+    const fetchData = async () => {
+      setIsFetching(true);
+      try {
+        await Promise.all([
+          getAllMarks(),
+          getAllStudents({ status: "pending" }),
+          getAllSubjects(),
+        ]);
+      } catch (error) {
+        toast.error("Failed to fetch data");
+      } finally {
+        setIsFetching(false);
+      }
+    };
+
+    fetchData();
   }, []);
 
   // Transform marks data and determine relevant subjects per class
@@ -164,20 +179,26 @@ const Mark = () => {
         subjects={subjects}
       />
 
-      {Object.keys(groupedByClass).map((className) => (
-        <div key={className} className="mb-8">
-          <h2 className="text-xl font-semibold mb-4">Class: {className}</h2>
-          <Table
-            colsHeader={[
-              "studentName",
-              "rollNo",
-              ...groupedByClass[className].subjects,
-              "average",
-            ]}
-            data={groupedByClass[className].data}
-          />
-        </div>
-      ))}
+      {isFetching ? (
+        <Loader />
+      ) : Object.keys(groupedByClass).length > 0 ? (
+        Object.keys(groupedByClass).map((className) => (
+          <div key={className} className="mb-8">
+            <h2 className="text-xl font-semibold mb-4">Class: {className}</h2>
+            <Table
+              colsHeader={[
+                "studentName",
+                "rollNo",
+                ...groupedByClass[className].subjects,
+                "average",
+              ]}
+              data={groupedByClass[className].data}
+            />
+          </div>
+        ))
+      ) : (
+        <div className="w-full text-center">No Data Available</div>
+      )}
     </div>
   );
 };

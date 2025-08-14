@@ -2,10 +2,12 @@ import { useEffect, useState } from "react";
 import SubjectFormModel from "../component/form/SubjectFormModel";
 import { toast } from "react-toastify";
 import axios from "axios";
+import { Loader } from "../component/Loader";
 
 const Subject = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [isFetching, setIsFetching] = useState(false);
   const [subjects, setSubjects] = useState([]);
 
   const handleAddSubject = async (subjectData, resetForm, onClose) => {
@@ -32,6 +34,7 @@ const Subject = () => {
   };
 
   const getAllSubjects = async () => {
+    setIsFetching(true);
     try {
       const response = await axios.get(
         `${import.meta.env.VITE_API_URL}/api/v1/subject`
@@ -50,6 +53,8 @@ const Subject = () => {
       toast.error(
         error.response?.data?.error?.message || "Failed to fetch subjects"
       );
+    } finally {
+      setIsFetching(false);
     }
   };
 
@@ -67,7 +72,9 @@ const Subject = () => {
       </button>
 
       <div className="px-4 mt-4 flex flex-col gap-6">
-        {Object.keys(subjects).length > 0 ? (
+        {isFetching ? (
+          <Loader />
+        ) : Object.keys(subjects).length > 0 ? (
           Object.entries(subjects).map(([className, subs]) => (
             <div key={className}>
               <h2 className="text-lg font-semibold mb-2">{className}</h2>
