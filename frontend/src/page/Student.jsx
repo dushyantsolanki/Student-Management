@@ -31,7 +31,7 @@ const Student = () => {
       resetForm();
       onClose();
     } catch (error) {
-      toast.error(rror.response?.data?.message || "Failed to create student");
+      toast.error(error.response?.data?.message || "Failed to create student");
     } finally {
       setLoading(false);
     }
