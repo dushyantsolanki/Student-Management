@@ -49,6 +49,7 @@ export const getStudents = async (req, res) => {
   try {
     const { status } = req.query;
     const filter = {};
+    filter.isDelete = false;
     if (status) filter.status = status;
 
     const students = await Student.find(filter).sort({ createdAt: -1 });
@@ -59,6 +60,88 @@ export const getStudents = async (req, res) => {
     });
   } catch (error) {
     console.error("ERROR : getStudents :: ", error);
+    return res.status(500).json({
+      status: "error",
+      message: error.message || "Internal server error",
+    });
+  }
+};
+
+export const updateStudent = async (req, res) => {
+  const { id } = req.params;
+
+  const result = studentSchema.safeParse(req.body);
+
+  if (!result.success) {
+    return res.status(400).json({
+      status: "fail",
+      errors: result.error.errors.map((err) => ({
+        field: err.path.join("."),
+        message: err.message,
+      })),
+    });
+  }
+
+  try {
+    const updatedStudent = await Student.findByIdAndUpdate(id, result.data, {
+      new: true,
+      runValidators: true,
+    });
+
+    if (!updatedStudent) {
+      return res.status(404).json({
+        status: "fail",
+        message: "Student not found",
+      });
+    }
+
+    return res.status(200).json({
+      status: "success",
+      message: "Student updated successfully!",
+      data: updatedStudent,
+    });
+  } catch (error) {
+    console.log("ERROR : updateStudent :: ", error);
+
+    if (error.code === 11000) {
+      return res.status(400).json({
+        status: "fail",
+        message: "Roll number must be unique within the same class",
+      });
+    }
+
+    return res.status(500).json({
+      status: "error",
+      message: error.message || "Internal server error",
+    });
+  }
+};
+
+export const deleteStudent = async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const deletedStudent = await Student.findByIdAndUpdate(
+      id,
+      { isDelete: true },
+      { new: true }
+    );
+
+    if (!deletedStudent) {
+      return res.status(404).json({
+        status: "fail",
+        message: "Student not found",
+      });
+    }
+
+    return res.status(200).json({
+      status: "success",
+      message: "Student deleted successfully.",
+      data: deletedStudent,
+    });
+  } catch (error) {
+    console.error("ERROR : deleteStudent :: ", error);
+
     return res.status(500).json({
       status: "error",
       message: error.message || "Internal server error",

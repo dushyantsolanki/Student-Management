@@ -19,15 +19,25 @@ const studentValidationSchema = Yup.object({
 });
 
 // Modal Component
-const StudentFormModel = ({ isOpen, onClose, onSubmit, loading = false }) => {
+const StudentFormModal = ({
+  isOpen,
+  onClose,
+  onSubmit,
+  loading = false,
+  initialData = null,
+}) => {
+  const isEditing = !!initialData;
+
   const formik = useFormik({
     initialValues: {
-      firstName: "",
-      lastName: "",
-      class: "",
-      rollNo: "",
+      id: initialData?.id || "",
+      firstName: initialData?.firstName || "",
+      lastName: initialData?.lastName || "",
+      class: initialData?.class || "",
+      rollNo: initialData?.rollNo || "",
     },
     validationSchema: studentValidationSchema,
+    enableReinitialize: true, // Allows form to reinitialize when initialData changes
     onSubmit: async (values, { resetForm }) => {
       try {
         await onSubmit(values, resetForm, onClose);
@@ -53,7 +63,7 @@ const StudentFormModel = ({ isOpen, onClose, onSubmit, loading = false }) => {
           {/* Header */}
           <div className="flex items-center justify-between p-6 border-b border-gray-200">
             <h3 className="text-lg font-semibold text-gray-900">
-              Add New Student
+              {isEditing ? "Edit Student" : "Add New Student"}
             </h3>
             <button
               onClick={onClose}
@@ -212,16 +222,22 @@ const StudentFormModel = ({ isOpen, onClose, onSubmit, loading = false }) => {
               <button
                 type="button"
                 onClick={onClose}
-                className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer"
               >
                 Cancel
               </button>
               <button
                 type="submit"
                 disabled={loading || !formik.isValid}
-                className="px-4 py-2 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="px-4 py-2 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500  cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                {loading ? "Adding..." : "Add Student"}
+                {loading
+                  ? isEditing
+                    ? "Updating..."
+                    : "Adding..."
+                  : isEditing
+                  ? "Update Student"
+                  : "Add Student"}
               </button>
             </div>
           </form>
@@ -231,4 +247,4 @@ const StudentFormModel = ({ isOpen, onClose, onSubmit, loading = false }) => {
   );
 };
 
-export default StudentFormModel;
+export default StudentFormModal;

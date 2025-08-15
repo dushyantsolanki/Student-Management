@@ -89,9 +89,8 @@ const Table = ({
         <div className="flex flex-col sm:flex-row items-center justify-end mt-4 gap-4">
           {/* Items Per Page */}
           <div className="flex items-center gap-2">
-            <span className="text-sm">Items per page:</span>
             <select
-              className="border border-gray-300 rounded px-2 py-1 text-sm"
+              className="border border-gray-300 rounded px-2 py-1 text-sm cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500"
               value={itemsPerPage}
               onChange={(e) => changeItemsPerPage(Number(e.target.value))}
             >
@@ -108,7 +107,7 @@ const Table = ({
             <button
               onClick={() => changePage(currentPage - 1)}
               disabled={currentPage === 1}
-              className="px-3 py-1 border border-gray-300 rounded text-sm disabled:opacity-50"
+              className="px-3 py-1 border border-gray-300 rounded text-sm disabled:opacity-50 cursor-pointer"
             >
               Prev
             </button>
@@ -117,7 +116,7 @@ const Table = ({
               <button
                 key={i}
                 onClick={() => changePage(i + 1)}
-                className={`px-3 py-1 border border-gray-300 rounded text-sm ${
+                className={`px-3 py-1 border border-gray-300 rounded text-sm cursor-pointer ${
                   currentPage === i + 1 ? "bg-gray-200 font-semibold" : ""
                 }`}
               >
@@ -128,7 +127,7 @@ const Table = ({
             <button
               onClick={() => changePage(currentPage + 1)}
               disabled={currentPage === totalPages}
-              className="px-3 py-1 border border-gray-300 rounded text-sm disabled:opacity-50"
+              className="px-3 py-1 border border-gray-300 rounded text-sm disabled:opacity-50 cursor-pointer"
             >
               Next
             </button>

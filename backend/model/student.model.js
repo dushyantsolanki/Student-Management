@@ -11,11 +11,15 @@ const studentSchema = new mongoose.Schema(
       enum: ["pending", "done"],
       default: "pending",
     },
+    isDelete: { type: Boolean, default: false },
   },
   { timestamps: true }
 );
-studentSchema.index({ class: 1, rollNo: 1 }, { unique: true });
 
+studentSchema.index(
+  { class: 1, rollNo: 1 },
+  { unique: true, partialFilterExpression: { isDelete: false } }
+);
 const Student = new mongoose.model("Student", studentSchema);
 
 export default Student;

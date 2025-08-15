@@ -88,65 +88,86 @@ const Mark = () => {
     fetchData();
   }, []);
 
-  // Transform marks data and determine relevant subjects per class
   const transformMarksData = () => {
-    // Group marks by class and track subjects per class
-    const classData = marks.reduce((acc, mark) => {
-      const classKey = mark.studentClass;
-      if (!acc[classKey]) {
-        acc[classKey] = {
-          students: {},
-          subjects: new Set(),
+    // Step 1: Organize marks by class
+    const classData = {};
+
+    // Loop through each mark entry
+    marks.forEach((mark) => {
+      const className = mark.studentClass;
+
+      // Initialize class if not already present
+      if (!classData[className]) {
+        classData[className] = {
+          students: {}, // To store student details
+          subjects: new Set(), // To track unique subjects for the class
         };
       }
-      acc[classKey].subjects.add(mark.subjectName);
 
-      // Use rollNo in studentKey to differentiate students with same name
+      // Add subject to the class's subject list
+      classData[className].subjects.add(mark.subjectName);
+
+      // Create a unique key for each student using name, class, and roll number
       const studentKey = `${mark.studentName}-${mark.studentClass}-${mark.rollNo}`;
-      if (!acc[classKey].students[studentKey]) {
-        acc[classKey].students[studentKey] = {
+
+      // Initialize student if not already present
+      if (!classData[className].students[studentKey]) {
+        classData[className].students[studentKey] = {
           studentName: mark.studentName,
           studentClass: mark.studentClass,
           rollNo: mark.rollNo,
-          marks: {},
+          marks: {}, // To store marks for each subject
         };
       }
-      acc[classKey].students[studentKey].marks[mark.subjectName] = mark.mark;
-      return acc;
-    }, {});
 
-    // Transform data for each class
+      // Store the mark for the subject
+      classData[className].students[studentKey].marks[mark.subjectName] =
+        mark.mark;
+    });
+
+    // Step 2: Prepare the final output
     const groupedByClass = {};
+
+    // Loop through each class
     Object.keys(classData).forEach((className) => {
       const classInfo = classData[className];
+      const allSubjects = Array.from(classInfo.subjects); // Convert subjects Set to array
+
+      // Create data for each student in the class
+      const studentData = Object.values(classInfo.students).map((student) => {
+        // Start with basic student info
+        const studentRow = {
+          studentName: student.studentName,
+          studentClass: student.studentClass,
+          rollNo: student.rollNo,
+        };
+
+        // Add marks for each subject (use "-" if no mark exists)
+        allSubjects.forEach((subject) => {
+          studentRow[subject] =
+            student.marks[subject] !== undefined ? student.marks[subject] : "-";
+        });
+
+        // Calculate average mark
+        const validMarks = Object.values(student.marks).filter(
+          (mark) => typeof mark === "number" && !isNaN(mark)
+        );
+        const average =
+          validMarks.length > 0
+            ? (
+                validMarks.reduce((sum, mark) => sum + mark, 0) /
+                validMarks.length
+              ).toFixed(2)
+            : "-";
+        studentRow.average = average;
+
+        return studentRow;
+      });
+
+      // Store the class data with students and subjects
       groupedByClass[className] = {
-        data: Object.values(classInfo.students).map((student) => {
-          const row = {
-            studentName: student.studentName,
-            studentClass: student.studentClass,
-            rollNo: student.rollNo,
-          };
-
-          // Include marks for subjects in this class
-          classInfo.subjects.forEach((subject) => {
-            row[subject] = student.marks[subject] || "-";
-          });
-
-          // Calculate average mark
-          const marks = Object.values(student.marks).filter(
-            (mark) => typeof mark === "number"
-          );
-          const average =
-            marks.length > 0
-              ? (
-                  marks.reduce((sum, mark) => sum + mark, 0) / marks.length
-                ).toFixed(2)
-              : "-";
-          row.average = average;
-
-          return row;
-        }),
-        subjects: Array.from(classInfo.subjects),
+        data: studentData,
+        subjects: allSubjects,
       };
     });
 
@@ -159,7 +180,7 @@ const Mark = () => {
     <div className="p-4">
       <button
         onClick={() => setIsMarkModalOpen(true)}
-        className="px-4 py-2 mb-4 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+        className="px-4 py-2 mb-4 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer"
       >
         + New Mark
       </button>

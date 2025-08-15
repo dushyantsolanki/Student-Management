@@ -34,7 +34,7 @@ const DashboardLayout = () => {
                     key={item.path}
                     to={item.path}
                     className={({ isActive }) =>
-                      `px-4 py-2 rounded-md text-sm font-medium transition-colors duration-200 flex items-center gap-2 ${
+                      `px-4 py-2 rounded-md text-sm font-medium transition-colors duration-200 flex items-centerfocus:outline-none focus:ring-1 focus:ring-blue-500 gap-2 ${
                         isActive
                           ? "bg-blue-100 text-blue-700 border border-blue-200"
                           : "text-gray-600 hover:text-gray-900 hover:bg-gray-100"
@@ -101,7 +101,7 @@ const DashboardLayout = () => {
                   to={item.path}
                   onClick={() => setIsMobileMenuOpen(false)}
                   className={({ isActive }) =>
-                    ` px-3 py-2 rounded-md text-base font-medium flex items-center gap-2 ${
+                    ` px-3 py-2 rounded-md text-base font-medium focus:outline-none focus:ring-1 focus:ring-blue-500 flex items-center gap-2 ${
                       isActive
                         ? "bg-blue-100 text-blue-700 "
                         : "text-gray-600 hover:text-gray-900 hover:bg-gray-50"

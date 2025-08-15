@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 
@@ -11,13 +12,20 @@ const subjectValidationSchema = Yup.object({
 });
 
 // Modal Component
-const SubjectFormModel = ({ isOpen, onClose, onSubmit, loading = false }) => {
+const SubjectFormModel = ({
+  isOpen,
+  onClose,
+  onSubmit,
+  loading = false,
+  initialData = null,
+}) => {
   const formik = useFormik({
     initialValues: {
-      name: "",
-      class: "",
+      name: initialData?.name || "",
+      class: initialData?.class || "",
     },
     validationSchema: subjectValidationSchema,
+    enableReinitialize: true, // Allows form to reinitialize when initialData changes
     onSubmit: async (values, { resetForm }) => {
       try {
         await onSubmit(values, resetForm, onClose);
@@ -27,7 +35,16 @@ const SubjectFormModel = ({ isOpen, onClose, onSubmit, loading = false }) => {
     },
   });
 
+  // Reset form when modal closes
+  useEffect(() => {
+    if (!isOpen) {
+      formik.resetForm();
+    }
+  }, [isOpen]);
+
   if (!isOpen) return null;
+
+  const isEditing = !!initialData;
 
   return (
     <div className="fixed inset-0 z-50 overflow-y-auto">
@@ -43,7 +60,7 @@ const SubjectFormModel = ({ isOpen, onClose, onSubmit, loading = false }) => {
           {/* Header */}
           <div className="flex items-center justify-between p-6 border-b border-gray-200">
             <h3 className="text-lg font-semibold text-gray-900">
-              Add New Subject
+              {isEditing ? "Edit Subject" : "Add New Subject"}
             </h3>
             <button
               onClick={onClose}
@@ -107,7 +124,7 @@ const SubjectFormModel = ({ isOpen, onClose, onSubmit, loading = false }) => {
                   </p>
                 )}
               </div>
-              {/* First Name */}
+              {/* Name */}
               <div>
                 <label
                   htmlFor="name"
@@ -127,7 +144,7 @@ const SubjectFormModel = ({ isOpen, onClose, onSubmit, loading = false }) => {
                       ? "border-red-500"
                       : "border-gray-300"
                   }`}
-                  placeholder="Enter first name"
+                  placeholder="Enter subject name"
                 />
                 {formik.touched.name && formik.errors.name && (
                   <p className="mt-1 text-sm text-red-600">
@@ -151,7 +168,13 @@ const SubjectFormModel = ({ isOpen, onClose, onSubmit, loading = false }) => {
                 disabled={loading || !formik.isValid}
                 className="px-4 py-2 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                {loading ? "Adding..." : "Add Subject"}
+                {loading
+                  ? isEditing
+                    ? "Updating..."
+                    : "Adding..."
+                  : isEditing
+                  ? "Update Subject"
+                  : "Add Subject"}
               </button>
             </div>
           </form>
