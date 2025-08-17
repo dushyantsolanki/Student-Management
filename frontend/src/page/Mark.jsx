@@ -79,7 +79,7 @@ const Mark = () => {
           getAllSubjects(),
         ]);
       } catch (error) {
-        toast.error("Failed to fetch data");
+        toast.error(error.response?.data?.message || "Failed to fetch data");
       } finally {
         setIsFetching(false);
       }
